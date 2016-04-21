@@ -386,7 +386,8 @@ var YourGiftHorses = React.createClass({
 
 		if(current < OpenAsLocalTimeMM) 
 			backgroundColor = "rgba(240,248,255,.55)",
-			messageText = "A surprise is coming on " + localOpenDateTime + "!"
+			messageText = "A surprise is coming on " + localOpenDateTime + "!",
+			displayType = "none"
 	
 		if (this.props.giftHorseData.id === undefined) 
 			displayType = "none"
@@ -407,7 +408,7 @@ var YourGiftHorses = React.createClass({
 				
 				
 				<p className="content">{messageText}</p>
-				<a href={giftLink}>Your Gift!</a>
+				<a style={{display:displayType}} href={giftLink}>Your Gift!</a>
 			</div>	
 		)
 	}	
