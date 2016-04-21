@@ -93,13 +93,13 @@ img {
     max-width: 100%;
 }
 body {
-    animation: animatedBackground 40s linear infinite;
+    // animation: animatedBackground 40s linear infinite;
     font-family: 'Rubik', 'Trebuchet MS', Arial, sans-serif;
-    background: url("./images/random_grey_variations_@2X.png") 0 0 repeat;
-    -webkit-animation: animate_background 60s linear 0s infinite;
-    -moz-animation: animate_background 60s linear 0s infinite;
-    -o-animation: animate_background 60s linear 0s infinite;
-    animation: animate_background 60s linear 0s infinite;
+    // background: url("./images/random_grey_variations_@2X.png") 0 0 repeat;
+    // -webkit-animation: animate_background 60s linear 0s infinite;
+    // -moz-animation: animate_background 60s linear 0s infinite;
+    // -o-animation: animate_background 60s linear 0s infinite;
+    // animation: animate_background 60s linear 0s infinite;
 }
 
 /**
@@ -134,127 +134,53 @@ body {
  * App code
  */
 
-.sidePanel {
-    display: inline-block;
-    min-width: 25%;
-    vertical-align: top;
-    background: rgba(240,248,255,.55);
-    padding: 2%;
-    box-shadow: 10px 10px rgba(0,0,0,.5);
-    margin: 3%;
+// .emailer:not(on:active) + .selectList {
+//   display: none;
+// }
 
-}
-
-.userImage {
-    display: inline-block;
-    margin-right: 5%;  
-    box-shadow: 5px 5px rgba(0,0,0,.5);
-}
-
-.userName {
-    display: inline-block;
-    color: rgba(0,0,0,.5);
-    vertical-align: top;
-}
-
-.stats {
-    display: inline-block;
-    margin-top: 3%;
-    vertical-align: top;
-}
-
-.achievementsContainer {
-   display: inline-block;
-   margin-right: 5%
-}
-
-.challengesContainer {
-    display: inline-block;
-}
-
-.achievementsChallengesSection {
-    text-align: left;
-}
-
-.challenges {
-    display: inline-block;
-    width: 100%;
-}
-
-.viewPanel {
-    background: rgba(240,248,255,.55);
-    width: 60%;
-    padding: 2%;
-    box-shadow: 10px 10px rgba(0,0,0,.5);
-    margin: 3%;
-    display: inline-block;
-}
-
-.issueChallenge {
-    display: inline-block;
-}
-
-.challengeController {
-    text-align: left;
-}
-
-.issueChallenge {
-    display: inline-block;
-    margin-left: 2%;
-    margin-right: 10%;
-}
-
-.challengesIssued {
-    display: inline-block;
-    margin-left: 2%;
-    margin-right: 10%;
-
-} 
-
-.logout {
-    display: inline-block;
-    margin-left: 2%;
-}   
-
-.challengesIssued {
-    display: inline-block;
-}
-
-.challengerSideBar {
-    display: inline-block;
-    vertical-align: top;
-}
-
-.challenger {
-
-}
-
-.composeChallenge {
-    display: inline-block;
-}
-
-.trophyContainer {
-    display: inline-block;
-}
-
-.messageDetails {
-    display: inline-block;
-}
+// .selectList {
+//     display: none;
+// }
 
 
-.trophy {
-    max-width: 25%;
-    display: inline-block;
-    vertical-align: middle;
-}
+
 
  a {
     display: block;
  }
 
- .messenger {
-    width: 40%;
- }
+li {
+
+ list-style-type: none;
+
+}
+
+li:hover {
+    background-color: cadetblue;
+}
+
+li:click {
+
+}
+
+.selectList {
+    position: absolute;
+    margin-left: 2%;
+    display: block;
+    margin-right: 2%;
+    margin-top: -2%;
+    background-color: aliceblue;
+    box-shadow: 5px 5px rgba(0, 0, 0, .5);
+}
+
+.emailer {
+    position: relative;
+
+}
+
+.selection {
+    position: absolute;
+}
 
  .message {
 
@@ -265,24 +191,35 @@ body {
  }
 
  input {
-        width: 100%;
         display: block;
         margin: 2%;
         }
 
-    .rewardContainer {    
 
-       margin-top: 10%; 
-   }
+.timeLine {
+  background-color: blue;
+  width: 600px;
+  height: 60px;
+}
 
-    .challengerSideBar {
-        margin: 1%;
-    }
+.progressBar {
+  width: 0%;
+  height: 100%;
+  background-color: orange;
+}
 
-    .composeChallenge {
+.howMuchLonger {
+  font-size: 40px;
+  vertical-align: center;
+  text-alignment: center;
+  color: white;
+  text-align: center;
+  position: relative;
+  top: 5px;
+  font-family: monospace;
+}
 
-      margin: 1%;  
-    }
+   
 
 .loginContainer {
     box-shadow: 20px 20px rgba(0,0,0,0.5);
@@ -318,35 +255,35 @@ body {
     }
 
 
-@-webkit-keyframes animate_background { 
-    from { 
-        background-position: -50% 150%;
-    } 
-    to { 
-        background-position: 150% -50%;
-    } 
-}
-@-moz-keyframes animate_background { 
-    from { 
-        background-position: -50% 150%;
-    } 
-    to { 
-        background-position: 150% -50%;
-    } 
-}
-@-o-keyframes animate_background { 
-    from { 
-        background-position: -50% 150%;
-    } 
-    to { 
-        background-position: 150% -50%;
-    } 
-}
-@keyframes animate_background { 
-    from { 
-        background-position: -50% 150%;
-    } 
-    to { 
-        background-position: 150% -50%;
-    } 
-}
+// @-webkit-keyframes animate_background { 
+//     from { 
+//         background-position: -50% 150%;
+//     } 
+//     to { 
+//         background-position: 150% -50%;
+//     } 
+// }
+// @-moz-keyframes animate_background { 
+//     from { 
+//         background-position: -50% 150%;
+//     } 
+//     to { 
+//         background-position: 150% -50%;
+//     } 
+// }
+// @-o-keyframes animate_background { 
+//     from { 
+//         background-position: -50% 150%;
+//     } 
+//     to { 
+//         background-position: 150% -50%;
+//     } 
+// }
+// @keyframes animate_background { 
+//     from { 
+//         background-position: -50% 150%;
+//     } 
+//     to { 
+//         background-position: 150% -50%;
+//     } 
+// }

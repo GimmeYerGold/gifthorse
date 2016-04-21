@@ -1,335 +1,561 @@
+// es5, 6, and 7 polyfills, powered by babel
 import polyfill from "babel-polyfill"
+
+//
+// fetch method, returns es6 promises
+// if you uncomment 'universal-utils' below, you can comment out this line
 import fetch from "isomorphic-fetch"
 import DOM from 'react-dom'
 import React, {Component} from 'react'
 import Backbone from 'bbfire'
 import Firebase from 'firebase'
 
-var ref = new Firebase("https://preward.firebaseio.com/")
-
-//sets up promise
-
-Backbone.Firebase.Model.prototype.fetchWithPromise = Backbone.Firebase.Collection.prototype.fetchWithPromise = function() {
-	this.fetch()
-	var self = this
-	var p = new Promise(function(res, rej){
-		self.once('sync', function() {
-			res()
-	})
-	self.once("err", function() {
-		rej()
-	})		
-		})
-	return p
-}
-
-//sets up usermodel with unique id for each
+var ref = new Firebase("https://gifthorse.firebaseio.com/")
 
 var UserModel = Backbone.Firebase.Model.extend({
 	initialize: function(uid) {
-		this.url = `https://preward.firebaseio.com/users/${uid}`
+		this.url = `https://gifthorse.firebaseio.com/users/${uid}`
 	}
 })	
 
-//autocompleter for guessing user names
-
 var AutoComplete = Backbone.Firebase.Collection.extend({
-	initialize: function(targetVal) {
+	initialize: function(targetEmail) {
 
-		if(targetVal.length > 0) {
+		if(targetEmail.length > 0) {
 
-		this.url = ref.child("users").orderByChild("userName").startAt(targetVal).endAt(targetVal+"\uf8ff").limitToFirst(20)
-		}
+		this.url = ref.child("users").orderByChild("email").startAt(targetEmail).endAt(targetEmail+"\uf8ff").limitToFirst(20)
+	}
 
-		else { targetVal = " "
+		if(targetEmail.length <= 0) {
 
-			this.url = ref.child("users").orderByChild("userName").startAt(targetVal).endAt(targetVal+"\uf8ff").limitToFirst(20)
-		}	
+		targetEmail = " "
+
+			this.url = ref.child("users").orderByChild("email").startAt(targetEmail).endAt(targetEmail+"\uf8ff").limitToFirst(20)
+		}			
+	},
+	autoSync: false
+})
+
+var QueryByEmail = Backbone.Firebase.Collection.extend({
+
+	initialize: function(targetEmail) {
+		this.url = ref.child("users").orderByChild("email").equalTo(targetEmail)
+	},
+	autoSync: false
+})
+
+var GiftHorses = Backbone.Firebase.Collection.extend({
+	initialize: function(uid) {
+		this.url = `https://gifthorse.firebaseio.com/users/${uid}/stable`
 	}
 })
 
-//sends user challenge via found username
+var StableView = React.createClass({
 
-var QueryByUser = Backbone.Firebase.Collection.extend({
-	initialize: function(targetUserName) {
-		this.url = ref.child("users").orderByChild("userName").equalTo(targetUserName)
+componentWillMount: function() {
+		var self = this
+		this.props.giftHorseColl.on("sync", function() {
+			self.forceUpdate()
+		})
 	},
 
+componentWillUnmount: function() {
+		clearInterval(this.interval)
+	},	
+
+	render: function() {
+
+		return (
+			<div className="currentView">
+				<div className="dashboard">
+					<p>Welcome {ref.getAuth().password.email.split("@")[0]}!</p>
+					
+					<a href="#hoofbeats">hoofbeats</a>
+					<a href="#stable">stable</a>
+					<a href="#send">send</a>
+					<a href="#logout" >log out</a>
+				</div>		
+				<div className="viewView">
+					<Stable giftHorseColl={this.props.giftHorseColl}/> 
+				</div>
+			</div>	
+		)
+	}			
 })
 
-var ChallengeModel = Backbone.Model.extend({
-	defaults: {
-		done: false
-	}
-})
-
-var UserChallenges = Backbone.Firebase.Collection.extend({
-	model: ChallengeModel,
-	initialize: function(uid) {
-		this.url = `https://preward.firebaseio.com/users/${uid}/challenges`
-	}
-})
-
-var DashPage = React.createClass({
+var HoofBeatsView = React.createClass({
 
 	componentWillMount: function() {
 		var self = this
-
-		var promise = this.props.challengeColl.fetchWithPromise()
-
-		promise.then(function() {
+		this.props.giftHorseColl.on("sync", function() {
 			self.forceUpdate()
 		})
 	},
 
 	render: function() {
 
-		var selected = {fontWeight: "bold",
-						color: "tomato"}			
-		
 		return (
-			<div className="dashboard">
-
-				<div className="sidePanel">
-					<div className="userBioRow">
-					<img className="userImage" src={ref.getAuth().password.profileImageURL}/>
-						<div className="stats">
-							<h6 className="userName">robbieandbobby</h6>
-							<h6>Level 1</h6>
-						</div>
-					</div>	
-					<div className="achievementsChallengesSection">
-					<div className="achievementsContainer">
-						<a className="achievements" href="#achievements"> Achievements</a>
-						<a className="achievementsCount" href="#achievements">99</a>
-					</div>
-					<div className="challengesContainer">	
-						<a className="challenges" href="#challenges"> Challenges</a>
-						<a className="challengesCount" href="#achievements">99</a>
-					</div>	
-					</div>	
+			<div className="currentView">
+				<div className="dashboard">
+					<p>Welcome {ref.getAuth().password.email.split("@")[0]}!</p>
+					
+					<a href="#hoofbeats">hoofbeats</a>
+					<a href="#stable">stable</a>
+					<a href="#send">send</a>
+					<a href="#logout" >log out</a>
+				</div>	
+				<div className="viewView">
+					<Hoofbeats giftHorseColl={this.props.giftHorseColl} />
 				</div>
-	
-				<div className="viewPanel">	
-					<div className="challengeController">	
-					<a className="issueChallenge" href="#issuechallenge" >Issue a Challenge</a>
-					<a className="challengesIssued" href="#challengesissued" >Challenges Issued</a>
-					<a className="logout" href="#logout" >Log Out</a>
-					</div>	
+			</div>		
+		)
+	}
+})
 
-					<Challenges challengeColl={this.props.challengeColl} />
-				</div>			
+var Stable = React.createClass({
+
+	_showGiftHorse: function(mod,i) {
+		return <YourGiftHorses giftHorseData={mod} key={i} />
+	},
+
+	render: function() {
+		return (
+			<div className="stable">
+				{this.props.giftHorseColl.map(this._showGiftHorse).reverse()}
 			</div>	
 		)
 	}
 })
 
-var Challenger = React.createClass({
+var Hoofbeats = React.createClass({
 
-	targetUserName: "",
-	challenge: "",
-	tasks: [],
-	imageFile: null,
-	rewardLink: "",
-	// date: "",
-	sendDate: "",
-	currentDate: "",
+	_showGiftHorse: function(mod,i) {
+		return <IncomingGiftHorse giftHorseData={mod} key={i} />
+	},
 
-	_setTargetUserName: function(e) {
+	render: function() {
+		return (
+			<div className="hoofbeats">
+				{this.props.giftHorseColl.map(this._showGiftHorse).reverse()}
+			</div>	
+		)
+	}
+})
 
-		var here = this
+var IncomingGiftHorse = React.createClass({
+	
+	componentWillMount: function() {
+		var self = this
+		this.interval = setInterval(
+			function() {
+				self.setState({
+					now: Date.now()
+				})
+			}, 1000)
+	},
 
-		this.targetUserName = e.target.value
+	componentWillUnmount: function() {
+		clearInterval(this.interval)
+	},
+
+	getInitialState: function() {
+		return {
+			now: Date.now()
+		}
+	},
+
+	render: function() {
+
+		var displayType = "block"
+		var backgroundColor = "cornflowerblue"
+		var messageText = this.props.giftHorseData.get("content") 
+
+		var userName = this.props.giftHorseData.get("sender_email")
+		var userImage = this.props.giftHorseData.get("sender_image")
+		var recipientImage = ref.getAuth().password.profileImageURL	
+
+		var openDate = this.props.giftHorseData.get("open_date")
+		var dateConverter = new Date(openDate)
+		var openDateMM = dateConverter.getTime()
+
+		var timezoneOffset = dateConverter.getTimezoneOffset()
+		var adjustment = timezoneOffset * 60000
+		var OpenAsLocalTimeMM = openDateMM + adjustment
+		var localOpenDateTime = new Date(OpenAsLocalTimeMM)
+
+
+		var openDateMM = dateConverter.getTime()
+		var sentDate = this.props.giftHorseData.get("sent_date")
+
+		var readableSentDate = new Date(sentDate).toLocaleDateString()
+		var readableSentTime = new Date(sentDate).toLocaleTimeString()
+		var readableOpenDate = new Date(localOpenDateTime).toLocaleDateString()
+
+		var readableOpenTime = new Date(localOpenDateTime).toLocaleTimeString()
+
+		var localSentDateTime = readableSentDate + " " + readableSentTime
+
+		var localOpenDateTime = readableOpenDate + " " + readableOpenTime 
+
+		var current = this.state.now
+
+		// if (userName !== undefined)
+
+		// userName = userName.split("@")[0]
+
+		if (current >= OpenAsLocalTimeMM) 
+			backgroundColor = "green",
+
+			displayType = "none"
+
+			
+
+			// displayType = "none"
+			// messageText = "Do not open until: " + localOpenDateTime
 		
-		var results = new AutoComplete(this.targetUserName)
+		if(current < OpenAsLocalTimeMM) 
+			backgroundColor = "lightblue",
+			messageText = "Do not open until: " + localOpenDateTime
+	
+		if (this.props.giftHorseData.id === undefined) 
+			displayType = "none"
+		
 
-		var promise = results.fetchWithPromise()
+		return (
+			<div style={{display:displayType, background: backgroundColor}}
+				className="message" >
+				<img className="senderImage" src={userImage}/>
+				<p className="author">from: {userName}</p>
+				<p className="sentDate">sent: {localSentDateTime}</p>
+						<div className="progressTracker">
+							<ProgressBar openDate={OpenAsLocalTimeMM} sentDate={this.props.giftHorseData.get("sent_date")}/>
+						</div>
+				<img className="recipientImage" src={recipientImage}/>
+				<p className="content">{messageText}</p>
+			</div>	
+		)
+	}	
+})
 
-		promise.then(function() {
+var ProgressBar = React.createClass({
 
-			var liEls = results.map(function(sel, j){
+	_progressFunc: function(sendDate, openDate){
+		
+		var send = new Date(sendDate)
+		var get = new Date(openDate)
+		var distance = get - send
 
-				if(sel.get("userName")) {
+		var current = this.state.now
 
-				return <li key={j}>{sel.get("userName")}</li> 
-				}
+		var prog = current - send
+
+		var completeness = prog/distance
+
+		var percentage = completeness.toPrecision(4) * 100
+
+		return percentage
+
+	},
+
+	componentWillMount: function() {
+		var self = this
+		this.interval = setInterval(
+			function() {
+				self.setState({
+					now: Date.now()
+				})
+			}, 1000)
+	},
+
+	componentWillUnmount: function() {
+		clearInterval(this.interval)
+	},
+
+	getInitialState: function() {
+		return {
+			now: Date.now()
+		}
+	},
+
+	render: function(){
+
+		var progressStyle = {}
+
+		progressStyle.width = this._progressFunc(this.props.sentDate,this.props.openDate) + "%"
+
+		// if (progressStyle.width > "100%") {
+		// 	clearInterval(this.interval)
+		// }
+
+		// if (this.state.now >= this.props.openDate)
+			// this.componentWillUnmount
+
+		return(
+			<div className="timeLine">
+   				<div style={progressStyle} className="progressBar">
+   				<div className="giftHorse"><img src="./images/gifthorse.gif"/>
+							</div>
+  					<div className="howMuchLonger">
+  					</div>
+      			</div>
+			</div>
+		)
+	}
+
+// var intervalID = window.setInterval(function() {progressIncreaser("2016-4-17 00:00","2016-4-17 18:52")}, 1000)
+
+})
+
+var YourGiftHorses = React.createClass({
+
+	componentWillMount: function() {
+		var self = this
+		this.interval = setInterval(
+			function() {
+				self.setState({
+					now: Date.now()
+				})
+			}, 1000)
+	},
+
+	componentWillUnmount: function() {
+		clearInterval(this.interval)
+	},
+
+	getInitialState: function() {
+		return {
+			now: Date.now()
+		}
+	},
+
+	render: function() {
+
+		var displayType = "block"
+		var backgroundColor = "cornflowerblue"
+		var messageText = this.props.giftHorseData.get("content") 
+
+		var userName = this.props.giftHorseData.get("sender_email")
+		var userImage = this.props.giftHorseData.get("sender_image")
+		var recipientImage = ref.getAuth().password.profileImageURL	
+
+		var openDate = this.props.giftHorseData.get("open_date")
+
+		var dateConverter = new Date(openDate)
+
+		var openDateMM = dateConverter.getTime()
+
+		var sentDate = this.props.giftHorseData.get("sent_date")
+
+		var readableSentDate = new Date(sentDate).toLocaleDateString()
+
+		var readableSentTime = new Date(sentDate).toLocaleTimeString()
+
+		var readableOpenDate = new Date(openDate).toLocaleDateString()
+
+		var readableOpenTime = new Date(openDate).toLocaleTimeString()
+
+		var localSentDateTime = readableSentDate + " " + readableSentTime
+
+		var localOpenDateTime = readableOpenDate + " " + readableOpenTime 
+
+		var current = this.state.now
+
+		// if (userName !== undefined)
+
+		// userName = userName.split("@")[0]
+
+		if (current <= openDateMM) 
+			backgroundColor = "green"
+
+		if(current < openDateMM) 
+			backgroundColor = "lightblue",
+			messageText = "Do not open until: " + localOpenDateTime
+	
+		if (this.props.giftHorseData.id === undefined) 
+			displayType = "none"
+
+
+		return (
+			<div style={{display:displayType, background: backgroundColor}}
+				className="message" >
+				<p className="author">from: {this.props.giftHorseData.get("sender_email")}</p>
+
+				<p className="sentDate">sent: {localSentDateTime}</p>
+						
+				<img className="recipientImage" src={recipientImage}/>
+				
+				<p className="content">{messageText}</p>
+			</div>	
+		)
+	}	
+})
+
+var SelectItem = React.createClass({
+
+	_searchName: function() {
+		
+		console.log("BUTTS")
+	},
+
+	render: function(){
+
+		return (
+			<div className="listItem">
+			<li onClick={this._searchName}>{this.props.selData}</li>
+			</div>
+		)
+	}
+})
+
+var SenderView = React.createClass({
+
+	targetEmail: "",
+	msg: "",
+	rewardLink: "",
+	sendDate: "",
+	openDate: "",
+
+	_setTargetEmail: function(e) {
+
+		this.targetEmail = e.target.value
+		
+		var results = new AutoComplete(this.targetEmail)
+
+		var self = this
+
+		results.fetch()	
+
+		results.on("sync", function() {
+			
+			var LIs = results.map(function(sel, j){
+
+				console.log(sel.attributes.email)
+
+				if(sel.get("email"))
+				
+				return <li name={sel.get("email")} key={j}>{sel.get("email")}</li>
 			})
 
-			here.setState({
-				queriedNames: liEls
+			self.setState({
+				names: LIs
 			})
 		})
 	},
 
-	_setChallenge: function(e) {
-		this.challenge = e.target.value
+	_setMsg: function(e) {
+		this.msg = e.target.value
 	},
 
-	_setUpload: function(e) {
-		var inputEl = e.target
-		this.imageFile = inputEl.files[0]
-
-		if (this.imageFile) {
-            var reader = new FileReader()
-            reader.readAsDataURL(this.imageFile)
-            reader.addEventListener('load', function() {
-                var base64string = reader.result
-                 this.imageFile = base64string
-            })
-		}
-	},	
+	_setOpenDate: function(e) {
+		this.openDate = e.target.value
+	},
 
 	_setRewardLink: function(e) {
 		this.rewardLink = e.target.value
 	},
 
-	_issueChallenge: function() {
+	_submitMessage: function() {
 
-		var queriedUsers = new QueryByUser(this.targetUserName)
-		var self = this,
+		var queriedUsers = new QueryByEmail(this.targetEmail)
 
-			challengeObject = {
-				content: self.challenge,
-				tasks: [],
-				sender_email: ref.getAuth().password.email,
-				image_data: self.imageFile,
-				link_data: self.rewardLink,
-				sender_id: ref.getAuth().uid,
-				
-				}
+		var self = this
 
-		var sendMessage = function() {
-			console.log('sending challenge')
-			var userId = queriedUsers.models[0].get("id")
+		if(self.targetEmail === undefined || self.targetEmail === "" ) {
+			alert("Enter a valid email address.") 
+			return
+		}
 
-			if (queriedUsers.models.length === 0) {
+		if (self.openDate === "" || self.openDate === undefined || self.date < Date.now()) {
+			alert("Select a valid date starting from today.") 
+			return
+		}	
+		if (self.msg === "") {
+			alert("Message is blank!") 
+			return
+
+		} else {
+			queriedUsers.fetch()
+			queriedUsers.on("sync", function() {
+
+				if (queriedUsers.models.length === 0) {
 			alert("That user does not exist.") 
 			return
 
 			} else {
 
-			var userChallengeCollection = new UserChallenges(userId)
+				var userId = queriedUsers.models[0].get("id")
 
-					userChallengeCollection.create(challengeObject)
-			}
-		}	
+				// var sentDate = self.props.currentDate
 
-		var promise = queriedUsers.fetchWithPromise()	
+					var GiftHorseCollection = new GiftHorses(userId)
+					GiftHorseCollection.create({
+						content: self.msg,
+						sender_email: ref.getAuth().password.email,
+						open_date: self.openDate,
+						sender_id: ref.getAuth().uid,
+						sender_image: ref.getAuth().password.profileImageURL,
+						sent_date: Date.now()
+					})
 
-		if (this.imageFile) {
-            var reader = new FileReader()
-            reader.readAsDataURL(this.imageFile)
-            reader.addEventListener('load', function() {
-                var base64string = reader.result
-                ChallengeObject.image_data = base64string
-                promise.then(sendMessage)
-            })
-        }	
-	
-		if(self.targetUserName === undefined || self.targetUserName === "" ) {
-			alert("Enter a valid email address.") 
-			return
-		}
-
-		if (self.challenge === "") {
-			alert("Message is blank!") 
-			return	
-	
-		} else {
-				 promise.then(sendMessage)
-			
-					self.targetUserName = ""
-					self.challenge = ""
+					self.targetEmail = ""
+					self.msg = ""
+					self.openDate = ""
 					self.rewardLink = ""
-					self.imageFile = ""
-					self.currentDate = ""
- 
-					self.refs.targetUserName.value = ""
-					self.refs.challenge.value = ""
 
-					self.refs.imageFile.value = ""
+					self.refs.targetEmail.value = ""
+					self.refs.msg.value = ""
+					self.refs.openDate.value = ""
 					self.refs.rewardLink.value = ""
 
-					this.state.queriedNames = []
-
+					self.state.names = []
+					
 					alert("message sent!")
 
 					return
-			}			
-		},
-	
+				}			
+			})	
+		}		
+    },
+
     getInitialState: function() {
 
-    	 return {queriedNames: []};
+    	 return {names: []};
+    },	 
+
+    test: function() {
+    	console.log("hey!")
     },
 
 	render: function() {
 
 		return (
 
-			<div className="challenger">
-			<div className="challengerSideBar">
-			<img className="userImage" src={ref.getAuth().password.profileImageURL}/>
-			</div>
-			<div className="composeChallenge">	
-				<div className="selection">
-					<input ref="targetUserName" placeholder="Issue a challenge to whom?" onChange={this._setTargetUserName} onBlur={this._clearSuggestions} />
-					<ul className="queryResults">{this.state.queriedNames}</ul>
+			<div className="currentView">
+				<div className="dashboard">
+						<p>Welcome {ref.getAuth().password.email.split("@")[0]}!</p>
+						
+						<a href="#hoofbeats">hoofbeats</a>
+						<a href="#stable">your stable</a>
+						<a href="#send">send a gifthorse</a>
+						<a href="#logout" >log out</a>
 				</div>
+				<div className="viewView">
+					<div className="sender">
+						<input onmouseenter={this._test} className="emailer" ref="targetEmail" placeholder="user's email address" onChange={this._setTargetEmail} />
+						
+							<div className="selectList">
+								{this.state.names}
+							</div>
+						
 
-				<h6>The Challenge</h6>
-				<input ref="challenge" placeholder="Declare the challenge!" onChange={this._setChallenge} />
-				<div className="rewardContainer">
-				<h6>The Reward</h6>
-
-				<input ref="rewardLink" className="rewardLinker" type="url" placeholder="send a link" onChange={this._setRewardLink} required pattern="https?://.+"/>
-				<button className="splashButtons" sentDate={this.sentDate} onClick={this._issueChallenge} > confirm</button>
+						<textarea ref="msg" placeholder="your message here" onChange={this._setMsg} />
+						<input ref="rewardLink" className="rewardLinker" type="url" placeholder="link reward" onChange={this._setRewardLink} required pattern="https?://.+"/>
+						<p>Date To Be Opened:</p>
+		  				<input type="datetime-local" ref="openDate" min={Date.now()} onChange={this._setOpenDate} />
+						<button sentDate={this.sentDate} onClick={this._submitMessage} > submit!</button>
+					</div>
 				</div>
-			</div>
-		</div>		
-		)
-	}
-})
-
-var Challenge = React.createClass({
-
-	render: function() {
-
-		var displayType = "block"
-		var messageText = this.props.challengeData.get("content")
-		var contentDisplay = "block"
-		var hyperlink = this.props.challengeData.get("link_data")
-		 
-		if (this.props.challengeData.id === undefined)
-			displayType = "none"
-
-		return (
-			<div style={{display: displayType}} className="message" >
-				<div className="messageDetails">
-					<p className="author">from: {this.props.challengeData.get("sender_email")}</p>
-					<p className="content">{messageText}</p>
-				</div>
-				<div className="trophyContainer">	
-				<img className="trophy" src="./images/trophyshadow.png" />
-				<h6 className="completeness">0%</h6>
-				</div>
-				<a className="hyperlink" href={hyperlink} >{hyperlink}</a>
-			</div>	
-		)
-	}	
-})
-
-var Challenges = React.createClass({
-
-	_showChallenges: function(mod,i) {
-		return <Challenge challengeData={mod} key={i} />
-	},
-
-	render: function() {
-		return (
-			<div className="challenges">
-				{this.props.challengeColl.map(this._showChallenges)}
-			</div>	
+			</div>			
 		)
 	}
 })
@@ -337,22 +563,17 @@ var Challenges = React.createClass({
 var SplashPage = React.createClass({
 	email: "",
 	password: "",
-	userName: "",
 
 	_handleSignUp: function() {
-		this.props.createUser(this.email,this.password, this.userName)
+		this.props.createUser(this.email,this.password)
 	},
 
 	_handleLogIn: function() {
-		this.props.logUserIn(this.email, this.password, this.userName)
+		this.props.logUserIn(this.email, this.password)
 	},
 
 	_updateEmail: function(event) {
 		this.email = event.target.value 
-	},
-
-	_updateUser: function(event) {
-		this.userName = event.target.value
 	},
 
 	_updatePassword: function(event) {
@@ -360,19 +581,13 @@ var SplashPage = React.createClass({
 	},
 
 	render: function() {
-
 		return (
 			<div className="loginContainer">
-				<div className="inputContainer">
-				<img className="goldTrophy" src="./images/trophygoldshadow.png" />
-				<h3>ichieve</h3>
-				<input type="email" name="email" placeholder="enter your email" onChange={this._updateEmail} required/>
-				<input type="text" name="username" placeholder="enter your username" onChange={this._updateUser} required/>
-				<input type="text" name="password" placeholder="enter your password" onChange={this._updatePassword} type="password" required/>
+				<input type="email" name="email" placeholder="enter your email" onChange={this._updateEmail} required />
+				<input type="text" name="password"placeholder="your password" onChange={this._updatePassword} type="password" required />
 				<div className="splashButtons">
-					<button onClick={this._handleLogIn}> Log in</button>
-					<button onClick={this._handleSignUp} >Sign up</button>	
-					</div>	
+					<button onClick={this._handleLogIn}> log in</button>
+					<button onClick={this._handleSignUp} >sign up</button>
 				</div>	
 			</div>	
 		)
@@ -383,20 +598,17 @@ function app() {
     // start app
     // new Router()
 
-    var IchieveRouter = Backbone.Router.extend({
+    var GiftHorseRouter = Backbone.Router.extend({
     	routes: {
     		"splash" : "_showSplashPage",
-    		"dash" : "_showDashboard",
+    		"hoofbeats" : "_showHoofBeatsView",
+    		"stable" : "_showStableView",
+    		"send" : "_showSendView",
     		"logout" : "_handleLogOut",
-    		"issuechallenge" : "_showChallenger",
-    		"challenges" : "_showChallenges",
-    		"achievements" : "_showAchievements",
-    		"challengesissued" : "_showIssuedChallenges",
-    		"*default" : "_showSplashPage"
     	},
 
     	initialize: function() {
-    		this.ref = new Firebase("https://preward.firebaseio.com/")
+    		this.ref = new Firebase("https://gifthorse.firebaseio.com/")
     		window.ref = this.ref
 
     	if (!this.ref.getAuth()) {
@@ -420,59 +632,61 @@ function app() {
     		createUser={this._createUser.bind(this)} />, document.querySelector(".container"))
     },
 
-    _showDashboard: function() {
-
+    _showHoofBeatsView: function() {
     	var uid = ref.getAuth().uid
-    	var challengeColl = new UserChallenges(uid);
-
-    	DOM.render(<DashPage user={this.email} challengeColl={challengeColl}/>,document.querySelector(".container"))
-
+    	var giftHorseColl = new GiftHorses(uid)
+    	
+    	DOM.render(<HoofBeatsView giftHorseColl={giftHorseColl}/>, document.querySelector(".container"))
     },
 
-    _showChallenger: function() {
-
+    _showStableView: function() {
     	var uid = ref.getAuth().uid
-    	var challengeColl = new UserChallenges(uid)
-    	DOM.render(<Challenger challengeColl={challengeColl} />, document.querySelector(".container"))
+    	var giftHorseColl = new GiftHorses(uid)
+
+    	DOM.render(<StableView giftHorseColl={giftHorseColl}/>, document.querySelector(".container"))
     },
 
-    _logUserIn: function(email,password,userName){
-    	console.log(email, password, userName)
+    _showSendView: function() {
+    	var uid = ref.getAuth().uid
+    	var giftHorseColl = new GiftHorses(uid)
+
+    	DOM.render(<SenderView giftHorseColl={giftHorseColl}/>, document.querySelector(".container"))
+    },
+
+    _logUserIn: function(email,password){
+    	console.log(email,password)
     	this.ref.authWithPassword({
     		email: email,
-    		password: password,
-    		userName: userName,
+    		password: password
     	}, function(err, authData) {
     	   		if (err) console.log(err)
     			else {
-    				location.hash = "dash"
+    				location.hash = "hoofbeats"
     			}	
     		}	
     	)
     },
 
-    _createUser: function(email,password,userName) {
-    	console.log(email, password, userName)
+    _createUser: function(email,password) {
+    	console.log(email, password)
     	var self = this
     	this.ref.createUser({
     		email: email,
     		password: password,
-    		userName: userName,
     	}, function(err, authData) {
     		if (err) console.log(err)
     		else {
     			var userMod = new UserModel(authData.uid)
     			userMod.set({
     				email: email,
-    				userName: userName,
-    				id: authData.uid,
+    				id: authData.uid
     			})
-    			self._logUserIn(email,password,userName)
+    			self._logUserIn(email,password)
     		}		
     	})
     }
 })
-    var pr = new IchieveRouter()
+    var pr = new GiftHorseRouter()
     Backbone.history.start()
 }
 
