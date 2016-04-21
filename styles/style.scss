@@ -92,15 +92,35 @@ ul, ol {
 img {
     max-width: 100%;
 }
+
 body {
-    // animation: animatedBackground 40s linear infinite;
+    // height: 100vh;
+    // animation: animatedBackground 20s linear infinite, animatedBackground 40s linear infinite;
     font-family: 'Rubik', 'Trebuchet MS', Arial, sans-serif;
-    // background: url("./images/random_grey_variations_@2X.png") 0 0 repeat;
-    // -webkit-animation: animate_background 60s linear 0s infinite;
-    // -moz-animation: animate_background 60s linear 0s infinite;
-    // -o-animation: animate_background 60s linear 0s infinite;
-    // animation: animate_background 60s linear 0s infinite;
+    background-image: url(./images/clouds400.png), url(./images/fence400.png);
+    background-position: top left, bottom right;
+    background-repeat: repeat-x;
+    background-color: #8deefd;
+    
+
+// -webkit-animation: backgroundScroll 20s linear infinite;
+// animation: backgroundScroll 20s linear infinite, backgroundScroll 40s linear infinite;
 }
+ 
+@-webkit-keyframes backgroundScroll {
+from {background-position: 0 0;}
+to {background-position: -400px 0;}
+}
+ 
+@keyframes backgroundScroll {
+from {background-position: 0 0;}
+to {background-position: -400px 0;}
+}
+    /* Multiple images */
+
+    // background-image:  url();
+    // background-repeat: repeat-x,
+                     
 
 /**
  * PACE (automatic pre-loader thingy)
@@ -142,9 +162,6 @@ body {
 //     display: none;
 // }
 
-
-
-
  a {
     display: block;
  }
@@ -159,10 +176,6 @@ li:hover {
     background-color: cadetblue;
 }
 
-li:click {
-
-}
-
 .selectList {
     position: absolute;
     margin-left: 2%;
@@ -173,8 +186,17 @@ li:click {
     box-shadow: 5px 5px rgba(0, 0, 0, .5);
 }
 
+.sender {
+    box-shadow: 20px 20px rgba(0,0,0,0.5);
+    margin: 10% auto;
+    background: rgba(240,248,255,.70);
+    padding: 2%;
+    margin-top: 10%;
+}
+
 .emailer {
     position: relative;
+    width: 50%;
 
 }
 
@@ -182,21 +204,72 @@ li:click {
     position: absolute;
 }
 
- .message {
-
-    margin: 2%;
-    border-top: 2px solid tomato;
-    // border-right: transparent;
-    // border-left: transparent;
- }
-
  input {
         display: block;
         margin: 2%;
         }
 
+  textarea {
+      margin: 2%;
+    width: 50%;
+  }   
+
+  .rewardLinker {
+    width: 50%;
+  }   
+
+ .senderText {
+    margin: 2%;
+ } 
+
+ .recipientImage {
+    right: 0;
+    position: absolute;
+    top: 39%;
+ }
+
+ .sendContainer {
+    display: inline-block;
+    width: 80%;
+ }
+
+ .giftHorse {
+    max-height: 100%;
+ }
+
+ .submitter {
+    margin: 2%
+ }
+
+ .sentDate {
+    margin-bottom: 0px;
+ }
+
+ .author {
+    margin-bottom: 0px;
+    vertical-align: top;
+ }
+
+ .giftInfo {
+    display: inline-block;
+    margin-left: 2%;
+    vertical-align: top;
+
+ }
+
+ .giftHorseSender {
+    display: inline-block;
+    width: 15%;
+    position: relative;
+ }
+
+ .hoofbeats {
+
+ }
+
 
 .timeLine {
+  max-width: 100%;  
   background-color: blue;
   width: 600px;
   height: 60px;
@@ -219,15 +292,57 @@ li:click {
   font-family: monospace;
 }
 
-   
+.giftHorseLogin {
+    padding: 5%;
+
+}
+
+.appTitle {
+    font-style: italic;
+    width: 100%;
+} 
+
+.container {
+    // height: 100vh;
+}
+
+.currentView {
+    width: 60%;
+    margin: auto;
+}
+
+.message {
+    box-shadow: 20px 20px rgba(0,0,0,0.5);
+    margin: 10% auto;
+    background: rgba(240,248,255,.70);
+    padding: 2%;
+    margin-top: 10%;
+}  
+
+.incomingMessage {
+    box-shadow: 20px 20px rgba(0,0,0,0.5);
+    margin: 10% auto;
+    background: rgba(240,248,255,.70);
+    padding: 2%;
+    margin-top: 10%;
+    position: relative;
+} 
+
+.dashboard {
+    box-shadow: 20px 20px rgba(0,0,0,.5);
+    margin: 5% auto;
+    background: rgba(240,248,255,.7);
+    padding: 2%;
+}
 
 .loginContainer {
     box-shadow: 20px 20px rgba(0,0,0,0.5);
-    margin: 5% auto;
-    width: 33%;
+    margin: 10% auto;
+    width: 40%;
     text-align: -webkit-center;
-    background: rgba(240,248,255,.55);
-    padding: 5px;
+    background: rgba(240,248,255,.70);
+    padding: 2%;
+    margin-top: 10%;
 
     .inputContainer {
         width: 80%;
@@ -257,33 +372,33 @@ li:click {
 
 // @-webkit-keyframes animate_background { 
 //     from { 
-//         background-position: -50% 150%;
+//         background-position: 0% 0%;
 //     } 
 //     to { 
-//         background-position: 150% -50%;
+//         background-position: 0% 100%;
 //     } 
 // }
 // @-moz-keyframes animate_background { 
-//     from { 
-//         background-position: -50% 150%;
+//      from { 
+//         background-position: 0% 100%;
 //     } 
 //     to { 
-//         background-position: 150% -50%;
+//         background-position: 100% 0%;
 //     } 
 // }
 // @-o-keyframes animate_background { 
-//     from { 
-//         background-position: -50% 150%;
+//      from { 
+//         background-position: 0% 100%;
 //     } 
 //     to { 
-//         background-position: 150% -50%;
+//         background-position: 100% 0%;
 //     } 
 // }
 // @keyframes animate_background { 
-//     from { 
-//         background-position: -50% 150%;
+//      from { 
+//         background-position: 0% 100%;
 //     } 
 //     to { 
-//         background-position: 150% -50%;
+//         background-position: 100% 0%;
 //     } 
 // }

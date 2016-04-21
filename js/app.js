@@ -70,9 +70,9 @@ componentWillUnmount: function() {
 				<div className="dashboard">
 					<p>Welcome {ref.getAuth().password.email.split("@")[0]}!</p>
 					
-					<a href="#hoofbeats">hoofbeats</a>
-					<a href="#stable">stable</a>
-					<a href="#send">send</a>
+					<a href="#hoofbeats">hoofbeats!</a>
+					<a href="#stable">your stable</a>
+					<a href="#send">send a gifthorse</a>
 					<a href="#logout" >log out</a>
 				</div>		
 				<div className="viewView">
@@ -99,9 +99,9 @@ var HoofBeatsView = React.createClass({
 				<div className="dashboard">
 					<p>Welcome {ref.getAuth().password.email.split("@")[0]}!</p>
 					
-					<a href="#hoofbeats">hoofbeats</a>
-					<a href="#stable">stable</a>
-					<a href="#send">send</a>
+					<a href="#hoofbeats">hoofbeats!</a>
+					<a href="#stable">your stable</a>
+					<a href="#send">send a gifthorse</a>
 					<a href="#logout" >log out</a>
 				</div>	
 				<div className="viewView">
@@ -167,12 +167,14 @@ var IncomingGiftHorse = React.createClass({
 	render: function() {
 
 		var displayType = "block"
-		var backgroundColor = "cornflowerblue"
+		var backgroundColor = "rgba(240,248,255,.55)"
 		var messageText = this.props.giftHorseData.get("content") 
 
 		var userName = this.props.giftHorseData.get("sender_email")
-		var userImage = this.props.giftHorseData.get("sender_image")
+		var senderImage = this.props.giftHorseData.get("sender_image")
 		var recipientImage = ref.getAuth().password.profileImageURL	
+
+		var giftLink = this.props.giftHorseData.get("reward_link")
 
 		var openDate = this.props.giftHorseData.get("open_date")
 		var dateConverter = new Date(openDate)
@@ -214,7 +216,7 @@ var IncomingGiftHorse = React.createClass({
 			// messageText = "Do not open until: " + localOpenDateTime
 		
 		if(current < OpenAsLocalTimeMM) 
-			backgroundColor = "lightblue",
+			backgroundColor = "rgba(240,248,255,.55)",
 			messageText = "Do not open until: " + localOpenDateTime
 	
 		if (this.props.giftHorseData.id === undefined) 
@@ -223,16 +225,22 @@ var IncomingGiftHorse = React.createClass({
 
 		return (
 			<div style={{display:displayType, background: backgroundColor}}
-				className="message" >
-				<img className="senderImage" src={userImage}/>
-				<p className="author">from: {userName}</p>
-				<p className="sentDate">sent: {localSentDateTime}</p>
-						<div className="progressTracker">
+				className="incomingMessage" >
+
+				<div className="giftHeader">
+					<img className="senderImage" src={senderImage}/>
+					<div className="giftInfo">
+					
+					<p className="author">from: {userName}</p>
+					<p className="sentDate">sent: {localSentDateTime}</p>
+				</div>	
+					<div className="progressTracker">
 							<ProgressBar openDate={OpenAsLocalTimeMM} sentDate={this.props.giftHorseData.get("sent_date")}/>
 						</div>
-				<img className="recipientImage" src={recipientImage}/>
+					<img className="recipientImage" src={recipientImage}/>
 				<p className="content">{messageText}</p>
 			</div>	
+			</div>
 		)
 	}	
 })
@@ -331,28 +339,34 @@ var YourGiftHorses = React.createClass({
 	render: function() {
 
 		var displayType = "block"
-		var backgroundColor = "cornflowerblue"
+		var backgroundColor = "rgba(240,248,255,.55)"
+		var senderImage = this.props.giftHorseData.get("sender_image")
 		var messageText = this.props.giftHorseData.get("content") 
 
 		var userName = this.props.giftHorseData.get("sender_email")
-		var userImage = this.props.giftHorseData.get("sender_image")
+
+		var giftLink = this.props.giftHorseData.get("reward_link")
+		
 		var recipientImage = ref.getAuth().password.profileImageURL	
 
 		var openDate = this.props.giftHorseData.get("open_date")
-
 		var dateConverter = new Date(openDate)
-
 		var openDateMM = dateConverter.getTime()
 
+		var timezoneOffset = dateConverter.getTimezoneOffset()
+		var adjustment = timezoneOffset * 60000
+		var OpenAsLocalTimeMM = openDateMM + adjustment
+		var localOpenDateTime = new Date(OpenAsLocalTimeMM)
+
+
+		var openDateMM = dateConverter.getTime()
 		var sentDate = this.props.giftHorseData.get("sent_date")
 
 		var readableSentDate = new Date(sentDate).toLocaleDateString()
-
 		var readableSentTime = new Date(sentDate).toLocaleTimeString()
+		var readableOpenDate = new Date(localOpenDateTime).toLocaleDateString()
 
-		var readableOpenDate = new Date(openDate).toLocaleDateString()
-
-		var readableOpenTime = new Date(openDate).toLocaleTimeString()
+		var readableOpenTime = new Date(localOpenDateTime).toLocaleTimeString()
 
 		var localSentDateTime = readableSentDate + " " + readableSentTime
 
@@ -364,12 +378,12 @@ var YourGiftHorses = React.createClass({
 
 		// userName = userName.split("@")[0]
 
-		if (current <= openDateMM) 
-			backgroundColor = "green"
+		// if (current <= openDateMM) 
+		// 	backgroundColor = "green"
 
-		if(current < openDateMM) 
-			backgroundColor = "lightblue",
-			messageText = "Do not open until: " + localOpenDateTime
+		if(current < OpenAsLocalTimeMM) 
+			backgroundColor = "rgba(240,248,255,.55)",
+			messageText = "A surprise is coming on " + localOpenDateTime + "!"
 	
 		if (this.props.giftHorseData.id === undefined) 
 			displayType = "none"
@@ -378,13 +392,19 @@ var YourGiftHorses = React.createClass({
 		return (
 			<div style={{display:displayType, background: backgroundColor}}
 				className="message" >
-				<p className="author">from: {this.props.giftHorseData.get("sender_email")}</p>
+				<div className="giftHeader">
+					<img className="senderImage" src={senderImage}/>
+					<div className="giftInfo">
+					<p className="author">from: {this.props.giftHorseData.get("sender_email")}</p>
 
-				<p className="sentDate">sent: {localSentDateTime}</p>
+					<p className="sentDate">sent: {localSentDateTime}</p>
+					</div>
+				</div>
 						
-				<img className="recipientImage" src={recipientImage}/>
+				
 				
 				<p className="content">{messageText}</p>
+				<a href={giftLink}>Your Gift!</a>
 			</div>	
 		)
 	}	
@@ -494,7 +514,8 @@ var SenderView = React.createClass({
 						open_date: self.openDate,
 						sender_id: ref.getAuth().uid,
 						sender_image: ref.getAuth().password.profileImageURL,
-						sent_date: Date.now()
+						sent_date: Date.now(),
+						reward_link: self.rewardLink
 					})
 
 					self.targetEmail = ""
@@ -534,26 +555,29 @@ var SenderView = React.createClass({
 				<div className="dashboard">
 						<p>Welcome {ref.getAuth().password.email.split("@")[0]}!</p>
 						
-						<a href="#hoofbeats">hoofbeats</a>
+						<a href="#hoofbeats">hoofbeats!</a>
 						<a href="#stable">your stable</a>
 						<a href="#send">send a gifthorse</a>
 						<a href="#logout" >log out</a>
 				</div>
 				<div className="viewView">
 					<div className="sender">
-						<input onmouseenter={this._test} className="emailer" ref="targetEmail" placeholder="user's email address" onChange={this._setTargetEmail} />
+						<div className="sendContainer">
+						<p className="senderText">Send a GiftHorse</p>
+						<input onmouseenter={this._test} className="emailer" ref="targetEmail" placeholder="recipient's email address" onChange={this._setTargetEmail} />
 						
 							<div className="selectList">
 								{this.state.names}
 							</div>
-						
-
-						<textarea ref="msg" placeholder="your message here" onChange={this._setMsg} />
-						<input ref="rewardLink" className="rewardLinker" type="url" placeholder="link reward" onChange={this._setRewardLink} required pattern="https?://.+"/>
-						<p>Date To Be Opened:</p>
+						<input ref="rewardLink" className="rewardLinker" type="url" placeholder="gift URL" onChange={this._setRewardLink} required pattern="https?://.+"/>
+						<textarea ref="msg" placeholder="attach a message..." onChange={this._setMsg} />
+						<p className="senderText">Date To Be Opened:</p>
 		  				<input type="datetime-local" ref="openDate" min={Date.now()} onChange={this._setOpenDate} />
-						<button sentDate={this.sentDate} onClick={this._submitMessage} > submit!</button>
+						<button className="submitter" sentDate={this.sentDate} onClick={this._submitMessage} > submit!</button>
+						</div>
+					<img className="giftHorseSender" src="./images/gifthorse.gif"/>	
 					</div>
+
 				</div>
 			</div>			
 		)
@@ -583,6 +607,8 @@ var SplashPage = React.createClass({
 	render: function() {
 		return (
 			<div className="loginContainer">
+				<img className="giftHorseLogin" src="./images/gifthorse.gif"/>
+				<h1 className="appTitle">GiftHorse</h1>
 				<input type="email" name="email" placeholder="enter your email" onChange={this._updateEmail} required />
 				<input type="text" name="password"placeholder="your password" onChange={this._updatePassword} type="password" required />
 				<div className="splashButtons">
@@ -605,6 +631,7 @@ function app() {
     		"stable" : "_showStableView",
     		"send" : "_showSendView",
     		"logout" : "_handleLogOut",
+    		"*wild" : "showSplashPage",
     	},
 
     	initialize: function() {
