@@ -381,6 +381,9 @@ var YourGiftHorses = React.createClass({
 		// if (current <= openDateMM) 
 		// 	backgroundColor = "green"
 
+
+
+
 		if(current < OpenAsLocalTimeMM) 
 			backgroundColor = "rgba(240,248,255,.55)",
 			messageText = "A surprise is coming on " + localOpenDateTime + "!"
@@ -631,7 +634,7 @@ function app() {
     		"stable" : "_showStableView",
     		"send" : "_showSendView",
     		"logout" : "_handleLogOut",
-    		"*wild" : "showSplashPage",
+    		"*default" : "_showSplashPage",
     	},
 
     	initialize: function() {
