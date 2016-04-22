@@ -94,32 +94,35 @@ img {
 }
 
 body {
+ background-color: #8deefd;   
+background-image: url(./images/lakefence400.png);
+     // url(./images/fence400.png);  
+    background-position: bottom;
+    background-attachment: fixed;
+    background-repeat: repeat-x;
+    animation-fill-mode: forwards;    
+
+    animation: animatedLake 48s linear infinite;
+    // height: 100vh;
+     /* W3C */
     // height: 100vh;
     // animation: animatedBackground 20s linear infinite, animatedBackground 40s linear infinite;
     font-family: 'Rubik', 'Trebuchet MS', Arial, sans-serif;
-    background-image: url(./images/clouds400.png), url(./images/fence400.png);
-    background-position: top left, bottom right;
-    background-repeat: repeat-x;
-    background-color: #8deefd;
     
-
 // -webkit-animation: backgroundScroll 20s linear infinite;
 // animation: backgroundScroll 20s linear infinite, backgroundScroll 40s linear infinite;
 }
  
-@-webkit-keyframes backgroundScroll {
-from {background-position: 0 0;}
-to {background-position: -400px 0;}
-}
+// @-webkit-keyframes backgroundScroll {
+// from {background-position: 0 0;}
+// to {background-position: -400px 0;}
+// }
  
-@keyframes backgroundScroll {
-from {background-position: 0 0;}
-to {background-position: -400px 0;}
-}
-    /* Multiple images */
-
-    // background-image:  url();
-    // background-repeat: repeat-x,
+// @keyframes backgroundScroll {
+// from {background-position: 0 0;}
+// to {background-position: -400px 0;}
+// }
+    
                      
 
 /**
@@ -196,7 +199,7 @@ li:hover {
 
 .emailer {
     position: relative;
-    width: 50%;
+    width: 75%;
 
 }
 
@@ -209,23 +212,61 @@ li:hover {
         margin: 2%;
         }
 
+.passwordInput {
+    width: 100%;
+    margin: 2%
+}
+
+.emailInput {
+    width: 100%;
+    margin: 2%;
+}
+        
+
   textarea {
       margin: 2%;
-    width: 50%;
+    width: 75%;
   }   
 
+
+  .userImage {
+    display: inline-block;
+    box-shadow: 5px 5px rgba(0,0,0,0.5);
+  }
+
+  .senderImage {
+    box-shadow: 5px 5px rgba(0,0,0,0.5);
+  }
+
+  .welcome {
+    display: inline-block;
+    vertical-align: top;
+    margin-left: 2%;
+  }
+
   .rewardLinker {
-    width: 50%;
+    width: 75%;
   }   
 
  .senderText {
     margin: 2%;
  } 
 
- .recipientImage {
-    right: 0;
+ .backToStable {
     position: absolute;
-    top: 39%;
+    top: 0%;
+    right: -25%;
+ }
+
+ .sendContainer {
+    position: relative;
+ }
+
+ .recipientImage {
+    right: 2%;
+    position: absolute;
+    top: 5%;
+    box-shadow: 5px 5px rgba(0,0,0,0.5);
  }
 
  .sendContainer {
@@ -234,7 +275,9 @@ li:hover {
  }
 
  .giftHorse {
-    max-height: 100%;
+    position: relative;
+    z-index: 1;
+    transform: translateY(-50%)
  }
 
  .submitter {
@@ -269,16 +312,15 @@ li:hover {
 
 
 .timeLine {
-  max-width: 100%;  
-  background-color: blue;
-  width: 600px;
-  height: 60px;
+  max-width: 100%;
+background-color: #56ff97;
+    height: 80px;
 }
 
 .progressBar {
   width: 0%;
   height: 100%;
-  background-color: orange;
+  background-color: #81ffb1;
 }
 
 .howMuchLonger {
@@ -300,15 +342,30 @@ li:hover {
 .appTitle {
     font-style: italic;
     width: 100%;
+    margin-bottom: 2%;
 } 
 
 .container {
-    // height: 100vh;
+background-image: url(./images/clouds400.png);
+    background-repeat: repeat-x;
+    animation: animatedClouds 29s linear infinite;
+    animation-fill-mode: forwards;
 }
 
 .currentView {
     width: 60%;
     margin: auto;
+}
+
+.signUp {
+    margin: 2%;
+    margin-bottom: 5%;
+    display: block;
+}
+
+.logInArea {
+    width: 50%;
+    padding-bottom: 2%;
 }
 
 .message {
@@ -336,14 +393,24 @@ li:hover {
 }
 
 .loginContainer {
-    box-shadow: 20px 20px rgba(0,0,0,0.5);
-    margin: 10% auto;
-    width: 40%;
+    box-shadow: 20px 20px rgba(0,0,0,.5);
+    margin: 2% auto;
+    width: 33%;
     text-align: -webkit-center;
-    background: rgba(240,248,255,.70);
-    padding: 2%;
-    margin-top: 10%;
+    background: rgba(240,248,255,.7)
+}
 
+.logIn {
+    margin: 2%;
+    width: 100%;
+    display: block;
+}
+
+.signUp {
+    width: 100%;  
+    display: block;
+
+}
     .inputContainer {
         width: 80%;
         margin-bottom: 5%;
@@ -360,7 +427,7 @@ li:hover {
                 display: block;
             }
     }    
-}
+
 
 .selection {
 
@@ -369,36 +436,57 @@ li:hover {
 }
     }
 
+@keyframes animatedLake {
+    from { background-position: 100% 100%; }
+    to { background-position: 0% 100%; }
+    animation-fill-mode: forwards;
+}    
 
-// @-webkit-keyframes animate_background { 
-//     from { 
-//         background-position: 0% 0%;
-//     } 
-//     to { 
-//         background-position: 0% 100%;
-//     } 
-// }
-// @-moz-keyframes animate_background { 
-//      from { 
-//         background-position: 0% 100%;
-//     } 
-//     to { 
-//         background-position: 100% 0%;
-//     } 
-// }
-// @-o-keyframes animate_background { 
-//      from { 
-//         background-position: 0% 100%;
-//     } 
-//     to { 
-//         background-position: 100% 0%;
-//     } 
-// }
-// @keyframes animate_background { 
-//      from { 
-//         background-position: 0% 100%;
-//     } 
-//     to { 
-//         background-position: 100% 0%;
-//     } 
-// }
+@keyframes animatedClouds {
+    from { background-position: 100% 0%; }
+    to { background-position: 0% 0%; }    
+    animation-fill-mode: forwards;
+
+}
+
+@media (max-width: 1200px) {
+    .loginContainer {
+    width: 50%;
+    }
+    .currentView {
+    width: 50%;    
+    }
+    // .appTitle {
+    // font-size: 80%;
+    // } 
+}
+
+@media (max-width: 900px) {
+    .loginContainer {  
+    width: 80%;
+    }
+    .currentView {
+    width: 80%;    
+    }
+    .appTitle {
+    font-size:3.5rem;
+    }
+    .gifHorseLogin {
+     max-width: 90%   
+    }
+}
+
+@media (max-width: 600px) {
+    .loginContainer {
+    width: 100%;
+    }
+    .currentView {
+    width: 100%;    
+    }
+    .appTitle {
+    font-size:3rem;
+    }
+    .gifHorseLogin {
+     max-width: 85%   
+    }
+}

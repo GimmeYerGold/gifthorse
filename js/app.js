@@ -65,10 +65,13 @@ componentWillUnmount: function() {
 
 	render: function() {
 
+		var userImage = ref.getAuth().password.profileImageURL	
+
 		return (
 			<div className="currentView">
 				<div className="dashboard">
-					<p>Welcome {ref.getAuth().password.email.split("@")[0]}!</p>
+					<img className="userImage" src={userImage}/>
+					<p className="welcome">Welcome {ref.getAuth().password.email.split("@")[0]}!</p>
 					
 					<a href="#hoofbeats">hoofbeats!</a>
 					<a href="#stable">your stable</a>
@@ -94,10 +97,13 @@ var HoofBeatsView = React.createClass({
 
 	render: function() {
 
+		var userImage = ref.getAuth().password.profileImageURL
+
 		return (
 			<div className="currentView">
 				<div className="dashboard">
-					<p>Welcome {ref.getAuth().password.email.split("@")[0]}!</p>
+					<img className="userImage" src={userImage}/>
+					<p className="welcome">Welcome {ref.getAuth().password.email.split("@")[0]}!</p>
 					
 					<a href="#hoofbeats">hoofbeats!</a>
 					<a href="#stable">your stable</a>
@@ -170,6 +176,8 @@ var IncomingGiftHorse = React.createClass({
 		var backgroundColor = "rgba(240,248,255,.55)"
 		var messageText = this.props.giftHorseData.get("content") 
 
+		var alignStyle = "left"
+
 		var userName = this.props.giftHorseData.get("sender_email")
 		var senderImage = this.props.giftHorseData.get("sender_image")
 		var recipientImage = ref.getAuth().password.profileImageURL	
@@ -217,7 +225,8 @@ var IncomingGiftHorse = React.createClass({
 		
 		if(current < OpenAsLocalTimeMM) 
 			backgroundColor = "rgba(240,248,255,.55)",
-			messageText = "Do not open until: " + localOpenDateTime
+			messageText = "Arrives: " + localOpenDateTime,
+			alignStyle = "right"
 	
 		if (this.props.giftHorseData.id === undefined) 
 			displayType = "none"
@@ -238,7 +247,7 @@ var IncomingGiftHorse = React.createClass({
 							<ProgressBar openDate={OpenAsLocalTimeMM} sentDate={this.props.giftHorseData.get("sent_date")}/>
 						</div>
 					<img className="recipientImage" src={recipientImage}/>
-				<p className="content">{messageText}</p>
+				<p style={{textAlign: alignStyle}}className="content">{messageText}</p>
 			</div>	
 			</div>
 		)
@@ -378,8 +387,8 @@ var YourGiftHorses = React.createClass({
 
 		// userName = userName.split("@")[0]
 
-		// if (current <= openDateMM) 
-		// 	backgroundColor = "green"
+		if (current <= OpenAsLocalTimeMM) 
+			displayType = "block"
 
 
 
@@ -416,11 +425,6 @@ var YourGiftHorses = React.createClass({
 
 var SelectItem = React.createClass({
 
-	_searchName: function() {
-		
-		console.log("BUTTS")
-	},
-
 	render: function(){
 
 		return (
@@ -438,6 +442,27 @@ var SenderView = React.createClass({
 	rewardLink: "",
 	sendDate: "",
 	openDate: "",
+
+	// _clearNames: function(e) {
+	// 	if (!e.target.classList.contains("autoEmail")) {
+	// 		this.setState({
+	// 			names: []
+	// 		})
+	// 	}
+	// },
+
+	_pickName: function(e) {
+		var name = e.target.textContent
+
+		this.refs.targetEmail.value = name
+		this.targetEmail = name
+
+		console.log(name)
+
+		this.setState({
+			names: []
+		})
+	},
 
 	_setTargetEmail: function(e) {
 
@@ -457,7 +482,7 @@ var SenderView = React.createClass({
 
 				if(sel.get("email"))
 				
-				return <li name={sel.get("email")} key={j}>{sel.get("email")}</li>
+				return <li className="autoEmail" name={sel.get("email")} key={j}>{sel.get("email")}</li>
 			})
 
 			self.setState({
@@ -468,14 +493,24 @@ var SenderView = React.createClass({
 
 	_setMsg: function(e) {
 		this.msg = e.target.value
+
+		console.log(this.msg)
 	},
 
 	_setOpenDate: function(e) {
 		this.openDate = e.target.value
+
+		console.log(this.openDate)
 	},
 
 	_setRewardLink: function(e) {
 		this.rewardLink = e.target.value
+
+		console.log(this.rewardLink)
+	},
+
+	_backToStable: function() {
+		location.hash = "stable"
 	},
 
 	_submitMessage: function() {
@@ -489,6 +524,10 @@ var SenderView = React.createClass({
 			return
 		}
 
+		if (self.rewardLink === "") {
+			alert("Gift URL is blank!") 
+			return
+		}	
 		if (self.openDate === "" || self.openDate === undefined || self.date < Date.now()) {
 			alert("Select a valid date starting from today.") 
 			return
@@ -523,14 +562,15 @@ var SenderView = React.createClass({
 					})
 
 					self.targetEmail = ""
+					self.rewardLink = ""
 					self.msg = ""
 					self.openDate = ""
-					self.rewardLink = ""
+					
 
 					self.refs.targetEmail.value = ""
+					self.refs.rewardLink.value = ""
 					self.refs.msg.value = ""
 					self.refs.openDate.value = ""
-					self.refs.rewardLink.value = ""
 
 					self.state.names = []
 					
@@ -547,17 +587,16 @@ var SenderView = React.createClass({
     	 return {names: []};
     },	 
 
-    test: function() {
-    	console.log("hey!")
-    },
-
 	render: function() {
+
+		var userImage = ref.getAuth().password.profileImageURL
 
 		return (
 
-			<div className="currentView">
+			<div  className="currentView">
 				<div className="dashboard">
-						<p>Welcome {ref.getAuth().password.email.split("@")[0]}!</p>
+					<img className="userImage" src={userImage}/>
+						<p className="welcome">Welcome {ref.getAuth().password.email.split("@")[0]}!</p>
 						
 						<a href="#hoofbeats">hoofbeats!</a>
 						<a href="#stable">your stable</a>
@@ -567,10 +606,15 @@ var SenderView = React.createClass({
 				<div className="viewView">
 					<div className="sender">
 						<div className="sendContainer">
+						<button className="backToStable" onClick={this._backToStable}>x</button>
 						<p className="senderText">Send a GiftHorse</p>
-						<input onmouseenter={this._test} className="emailer" ref="targetEmail" placeholder="recipient's email address" onChange={this._setTargetEmail} />
+						<input  
+							className="emailer" 
+							ref="targetEmail" 
+							placeholder="recipient's email address" 
+							onChange={this._setTargetEmail} />
 						
-							<div className="selectList">
+							<div id="nameList" onClick={this._pickName} className="selectList">
 								{this.state.names}
 							</div>
 						<input ref="rewardLink" className="rewardLinker" type="url" placeholder="gift URL" onChange={this._setRewardLink} required pattern="https?://.+"/>
@@ -613,11 +657,13 @@ var SplashPage = React.createClass({
 			<div className="loginContainer">
 				<img className="giftHorseLogin" src="./images/gifthorse.gif"/>
 				<h1 className="appTitle">GiftHorse</h1>
-				<input type="email" name="email" placeholder="enter your email" onChange={this._updateEmail} required />
-				<input type="text" name="password"placeholder="your password" onChange={this._updatePassword} type="password" required />
+				<div className="logInArea">			
+				<input className="emailInput" type="email" name="email" placeholder="enter your email" onChange={this._updateEmail} required />
+				<input className="passwordInput" type="text" name="password"placeholder="your password" onChange={this._updatePassword} type="password" required />
 				<div className="splashButtons">
-					<button onClick={this._handleLogIn}> log in</button>
-					<button onClick={this._handleSignUp} >sign up</button>
+					<button className="logIn" onClick={this._handleLogIn}> log in</button>
+					<button className="signUp"onClick={this._handleSignUp} >sign up</button>
+				</div>	
 				</div>	
 			</div>	
 		)
@@ -704,14 +750,16 @@ function app() {
     	this.ref.createUser({
     		email: email,
     		password: password,
+    		profileImage: "http://lorempixel.com/80/80/"  
     	}, function(err, authData) {
     		if (err) console.log(err)
     		else {
     			var userMod = new UserModel(authData.uid)
     			userMod.set({
     				email: email,
-    				id: authData.uid
-    			})
+    				id: authData.uid,
+    				profileImage: "http://lorempixel.com/80/80/" 
+    			})	   			
     			self._logUserIn(email,password)
     		}		
     	})
